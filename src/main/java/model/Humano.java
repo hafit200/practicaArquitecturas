@@ -9,5 +9,9 @@ package model;
  * @author Asus
  */
 public interface Humano {
+    //2 cosas 
+    //1 constantes -> final y no un valor
+    //metodos declarados no inplementados terminan en ;
     
+    public void identificacion();
 }
