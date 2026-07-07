@@ -17,13 +17,6 @@ public class Direccion extends Pais {
     public Direccion() {
     }
 
-    public Direccion(String calle, String ciudad, int codPostal, Pais pais) {
-        this.calle = calle;
-        this.ciudad = ciudad;
-        this.codPostal = codPostal;
-        this.pais = pais;
-    }
-
     public Direccion(String calle, String ciudad, int codPostal, Pais pais, String nombre, String capital) {
         super(nombre, capital);
         this.calle = calle;
@@ -66,7 +59,7 @@ public class Direccion extends Pais {
 
     @Override
     public String toString() {
-        return pais + "----Direccion----"+ "\n" + " calle=" + calle + "\n ciudad=" + ciudad + "\n codPostal=" + codPostal + "\n pais=";
+        return pais + "----Direccion----"+ "\n" + " calle=" + calle + "\n ciudad=" + ciudad + "\n codPostal=" + codPostal + "\n pais="+ pais.getNombre();
     }
 
 
