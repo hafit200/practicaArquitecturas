@@ -22,74 +22,82 @@ public class PaisControlador {
     PreparedStatement ejecutar;
     //OBTENER RESULTADOS DE LA CONSULTA
     ResultSet resultado;
-    
+
     //Metodo de editar pais
     // 1. MÉTODO PARA EDITAR: Recibe el ID de la base de datos y el objeto Pais con los nuevos datos
-public void editarPais(int idPais, Pais p) {
-    Connection conectado = conectar.conectar(); // Abrir conexión
-    String sentenciaSQL = "UPDATE Paises SET nombre_pais = ?, capital_pais = ? WHERE id_pais = ?;";
-    
-    try {
-        ejecutar = conectado.prepareStatement(sentenciaSQL);
-        
-        // Mapeamos los datos del objeto Pais
-        ejecutar.setString(1, p.getNombre());
-        ejecutar.setString(2, p.getCapital());
-        // El ID lo pasamos directo del parámetro que recibimos en el método
-        ejecutar.setInt(3, idPais); 
-        
-        int res = ejecutar.executeUpdate();
-        
-        if (res > 0) {
-            JOptionPane.showMessageDialog(null, "País actualizado con éxito");
-        } else {
-            JOptionPane.showMessageDialog(null, "No se pudo actualizar el país. Verifique que el ID sea correcto.");
-        }
-        
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Error al intentar editar el país.");
-        System.out.println("Error en editarPais: " + e);
-    } finally {
+    public void editarPais(int idPais, Pais p) {
+        Connection conectado = conectar.conectar();
+
+        // Concatenamos las variables directamente en el String del SQL
+        String sentenciaSQL = "UPDATE Paises SET nombre_pais = '" + p.getNombre() + "', "
+                + "capital_pais = '" + p.getCapital() + "' "
+                + "WHERE id_pais = " + idPais + ";";
+
         try {
-            if (ejecutar != null) ejecutar.close();
-            if (conectado != null) conectado.close();
+            // Al no haber "?", no necesitamos pasar parámetros después.
+            // Se ejecuta la sentencia tal cual se armó arriba.
+            ejecutar = conectado.prepareStatement(sentenciaSQL);
+
+            int res = ejecutar.executeUpdate();
+
+            if (res > 0) {
+                JOptionPane.showMessageDialog(null, "País actualizado con éxito");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo actualizar el país.");
+            }
+
         } catch (SQLException e) {
-            System.out.println("Error al cerrar conexión: " + e);
+            JOptionPane.showMessageDialog(null, "Error al intentar editar.");
+            System.out.println("Error en editarPais: " + e);
+        } finally {
+            try {
+                if (ejecutar != null) {
+                    ejecutar.close();
+                }
+                if (conectado != null) {
+                    conectado.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar conexión: " + e);
+            }
         }
     }
-}
 
 // 2. MÉTODO PARA ELIMINAR: Solo recibe el ID del país a borrar
-public void eliminarPais(int idPais) {
-    Connection conectado = conectar.conectar();
-    String sentenciaSQL = "DELETE FROM Paises WHERE id_pais = ?;";
-    
-    try {
-        ejecutar = conectado.prepareStatement(sentenciaSQL);
-        
-        // Pasamos el ID directamente
-        ejecutar.setInt(1, idPais);
-        
-        int res = ejecutar.executeUpdate();
-        
-        if (res > 0) {
-            JOptionPane.showMessageDialog(null, "País eliminado con éxito");
-        } else {
-            JOptionPane.showMessageDialog(null, "No se encontró ningún país con el ID proporcionado.");
-        }
-        
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "No se puede eliminar el país. Puede estar asociado a un estudiante.");
-        System.out.println("Error en eliminarPais: " + e);
-    } finally {
+    public void eliminarPais(int idPais) {
+        Connection conectado = conectar.conectar();
+        String sentenciaSQL = "DELETE FROM Paises WHERE id_pais = ?;";
+
         try {
-            if (ejecutar != null) ejecutar.close();
-            if (conectado != null) conectado.close();
+            ejecutar = conectado.prepareStatement(sentenciaSQL);
+
+            // Pasamos el ID directamente
+            ejecutar.setInt(1, idPais);
+
+            int res = ejecutar.executeUpdate();
+
+            if (res > 0) {
+                JOptionPane.showMessageDialog(null, "País eliminado con éxito");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encontró ningún país con el ID proporcionado.");
+            }
+
         } catch (SQLException e) {
-            System.out.println("Error al cerrar conexión: " + e);
+            JOptionPane.showMessageDialog(null, "No se puede eliminar el país. Puede estar asociado a un estudiante.");
+            System.out.println("Error en eliminarPais: " + e);
+        } finally {
+            try {
+                if (ejecutar != null) {
+                    ejecutar.close();
+                }
+                if (conectado != null) {
+                    conectado.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar conexión: " + e);
+            }
         }
     }
-}
 
     //MÉTODOS DE TRANSACCIONABILIDAD
     public void insertarPais(Pais p) {
@@ -119,38 +127,35 @@ public void eliminarPais(int idPais) {
         }
 
     }
-    
-    
 
     public ArrayList<String[]> obtenerPaises() {
-    ArrayList<String[]> lregistros = new ArrayList<>();
+        ArrayList<String[]> lregistros = new ArrayList<>();
 
-    try {
-        String sentenciaSQL = "SELECT * FROM paises";
-        ejecutar = conectado.prepareCall(sentenciaSQL);
-        ResultSet res = ejecutar.executeQuery();
+        try {
+            String sentenciaSQL = "SELECT * FROM paises";
+            ejecutar = conectado.prepareCall(sentenciaSQL);
+            ResultSet res = ejecutar.executeQuery();
 
-        while (res.next()) {
-            String[] listaPaises = new String[3]; 
+            while (res.next()) {
+                String[] listaPaises = new String[3];
 
-            listaPaises[0] = String.valueOf(res.getInt("id_pais"));
-            listaPaises[1] = res.getString("nombre_pais");
-            listaPaises[2] = res.getString("capital_pais");
+                listaPaises[0] = String.valueOf(res.getInt("id_pais"));
+                listaPaises[1] = res.getString("nombre_pais");
+                listaPaises[2] = res.getString("capital_pais");
 
-            lregistros.add(listaPaises);
+                lregistros.add(listaPaises);
+            }
+
+            res.close();
+            ejecutar.close();
+            conectado.close();
+
+        } catch (SQLException e) {
+            System.out.println(e);
         }
 
-        res.close();
-        ejecutar.close();
-        conectado.close();
+        return lregistros;
 
-    } catch (SQLException e) {
-        System.out.println(e);
     }
-
-    return lregistros;
-    
-    
-}
 
 }
