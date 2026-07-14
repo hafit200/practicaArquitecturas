@@ -68,13 +68,62 @@ public class Main {
 
         ArrayList<String[]> lista = deber.obtenerPaises();
 
+        String[] opciones = new String[lista.size()];
+        for (int i = 0; i < lista.size(); i++) {
+            opciones[i] = lista.get(i)[1]; // nombre del país
+        }
         for (String[] pais : lista) {
             System.out.println(
-                    pais[0] + " - "
-                    + pais[1] + " - "
-                    + pais[2]
+                    pais[1]
             );
+
         }
+        String paisSeleccionado = (String) JOptionPane.showInputDialog(
+        null,
+        "Escoja su país",
+        "PAÍSES",
+        JOptionPane.QUESTION_MESSAGE,
+        null,
+        opciones,
+        opciones[0]
+);
+
+System.out.println("Seleccionó: " + paisSeleccionado);
+
+PaisControlador pc = new PaisControlador();
+
+// 1. Pedir los datos al usuario mediante JOptionPane
+String idEditarInput = JOptionPane.showInputDialog("Ingrese el ID del país que desea EDITAR:");
+
+if (idEditarInput != null && !idEditarInput.isEmpty()) {
+    int idEditar = Integer.parseInt(idEditarInput); // Convertimos el ID a número
+    
+    String nuevoNombre = JOptionPane.showInputDialog("Ingrese el NUEVO nombre del país:");
+    String nuevaCapital = JOptionPane.showInputDialog("Ingrese la NUEVA capital del país:");
+    
+    // 2. Crear el objeto Pais con los nuevos datos (tu modelo no usa ID)
+    Pais datosNuevos = new Pais(nuevoNombre, nuevaCapital);
+    
+    // 3. Llamar al controlador pasando el ID y el objeto por separado
+    pc.editarPais(idEditar, datosNuevos); 
+}
+
+// 1. Pedir el ID al usuario mediante JOptionPane
+String idEliminarInput = JOptionPane.showInputDialog("Ingrese el ID del país que desea ELIMINAR:");
+
+if (idEliminarInput != null && !idEliminarInput.isEmpty()) {
+    int idEliminar = Integer.parseInt(idEliminarInput); // Convertimos el ID a número
+    
+    // 2. Confirmación rápida de seguridad
+    int confirmar = JOptionPane.showConfirmDialog(null, 
+            "¿Seguro que desea eliminar el país con ID: " + idEliminar + "?", 
+            "Confirmar", JOptionPane.YES_NO_OPTION);
+            
+    if (confirmar == JOptionPane.YES_OPTION) {
+        // 3. Llamar al controlador pasando solo el ID
+        pc.eliminarPais(idEliminar); 
+    }
+}
 
     }
 }

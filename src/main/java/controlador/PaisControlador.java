@@ -22,6 +22,74 @@ public class PaisControlador {
     PreparedStatement ejecutar;
     //OBTENER RESULTADOS DE LA CONSULTA
     ResultSet resultado;
+    
+    //Metodo de editar pais
+    // 1. MÉTODO PARA EDITAR: Recibe el ID de la base de datos y el objeto Pais con los nuevos datos
+public void editarPais(int idPais, Pais p) {
+    Connection conectado = conectar.conectar(); // Abrir conexión
+    String sentenciaSQL = "UPDATE Paises SET nombre_pais = ?, capital_pais = ? WHERE id_pais = ?;";
+    
+    try {
+        ejecutar = conectado.prepareStatement(sentenciaSQL);
+        
+        // Mapeamos los datos del objeto Pais
+        ejecutar.setString(1, p.getNombre());
+        ejecutar.setString(2, p.getCapital());
+        // El ID lo pasamos directo del parámetro que recibimos en el método
+        ejecutar.setInt(3, idPais); 
+        
+        int res = ejecutar.executeUpdate();
+        
+        if (res > 0) {
+            JOptionPane.showMessageDialog(null, "País actualizado con éxito");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se pudo actualizar el país. Verifique que el ID sea correcto.");
+        }
+        
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al intentar editar el país.");
+        System.out.println("Error en editarPais: " + e);
+    } finally {
+        try {
+            if (ejecutar != null) ejecutar.close();
+            if (conectado != null) conectado.close();
+        } catch (SQLException e) {
+            System.out.println("Error al cerrar conexión: " + e);
+        }
+    }
+}
+
+// 2. MÉTODO PARA ELIMINAR: Solo recibe el ID del país a borrar
+public void eliminarPais(int idPais) {
+    Connection conectado = conectar.conectar();
+    String sentenciaSQL = "DELETE FROM Paises WHERE id_pais = ?;";
+    
+    try {
+        ejecutar = conectado.prepareStatement(sentenciaSQL);
+        
+        // Pasamos el ID directamente
+        ejecutar.setInt(1, idPais);
+        
+        int res = ejecutar.executeUpdate();
+        
+        if (res > 0) {
+            JOptionPane.showMessageDialog(null, "País eliminado con éxito");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontró ningún país con el ID proporcionado.");
+        }
+        
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "No se puede eliminar el país. Puede estar asociado a un estudiante.");
+        System.out.println("Error en eliminarPais: " + e);
+    } finally {
+        try {
+            if (ejecutar != null) ejecutar.close();
+            if (conectado != null) conectado.close();
+        } catch (SQLException e) {
+            System.out.println("Error al cerrar conexión: " + e);
+        }
+    }
+}
 
     //MÉTODOS DE TRANSACCIONABILIDAD
     public void insertarPais(Pais p) {
@@ -51,6 +119,8 @@ public class PaisControlador {
         }
 
     }
+    
+    
 
     public ArrayList<String[]> obtenerPaises() {
     ArrayList<String[]> lregistros = new ArrayList<>();
@@ -78,7 +148,9 @@ public class PaisControlador {
         System.out.println(e);
     }
 
-S    return lregistros;
+    return lregistros;
+    
+    
 }
 
 }
