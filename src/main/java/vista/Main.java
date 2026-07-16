@@ -67,15 +67,17 @@ public class Main {
        PaisControlador deber = new PaisControlador();
 
         ArrayList<String[]> lista = deber.obtenerPaises();
+        
 
         String[] opciones = new String[lista.size()];
         for (int i = 0; i < lista.size(); i++) {
-            opciones[i] = lista.get(i)[1]; // nombre del país
+            opciones[i] = lista.get(i)[1];
+            opciones[i] = lista.get(i)[0];// nombre del país
         }
         for (String[] pais : lista) {
             System.out.println(
-                    pais[1]
-            );
+                    pais[1]);
+            
 
         }
         String paisSeleccionado = (String) JOptionPane.showInputDialog(

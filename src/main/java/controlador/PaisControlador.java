@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import model.PDF;
 import model.Pais;
 
 /**
@@ -66,14 +67,16 @@ public class PaisControlador {
 // 2. MÉTODO PARA ELIMINAR: Solo recibe el ID del país a borrar
     public void eliminarPais(int idPais) {
         Connection conectado = conectar.conectar();
-        String sentenciaSQL = "DELETE FROM Paises WHERE id_pais = ?;";
+
+        // Concatenamos el ID directamente en la sentencia SQL
+        String sentenciaSQL = "DELETE FROM Paises WHERE id_pais = " + idPais + ";";
 
         try {
+            // Ejecutamos la sentencia tal cual se armó arriba
             ejecutar = conectado.prepareStatement(sentenciaSQL);
 
-            // Pasamos el ID directamente
-            ejecutar.setInt(1, idPais);
-
+            // Ya no necesitamos la línea ejecutar.setInt(1, idPais); 
+            // porque el ID ya va escrito dentro del String de la consulta.
             int res = ejecutar.executeUpdate();
 
             if (res > 0) {
@@ -103,7 +106,7 @@ public class PaisControlador {
     public void insertarPais(Pais p) {
         //1.- UTILIZAR EXCEPCIÓN
         try {//LANZAR TESTEAR UN CONJUNTO DE CÓDIGO 
-            String sentenciaSQL = "INSERT INTO Paises(nombre,capital)values "
+            String sentenciaSQL = "INSERT INTO Paises(nombre_pais,capital_pais)values "
                     + "('" + p.getNombre() + "','" + p.getCapital() + "');";
             ejecutar = conectado.prepareCall(sentenciaSQL);
             //TODA INSERCIÓN DEVUELVE UN ESTADO >0 CUANDO FUE FAVORABLE Y MENOR A O CUANDO NO SE REALIZÓ 
@@ -158,4 +161,36 @@ public class PaisControlador {
 
     }
 
+    public void obtenerPaisesTodos() {
+
+    String contenido = "";
+
+    try {
+        String sentenciaSQL = "SELECT * FROM paises";
+
+        ejecutar = conectado.prepareCall(sentenciaSQL);
+
+        ResultSet res = ejecutar.executeQuery();
+
+        while (res.next()) {
+
+            contenido += "ID: " + res.getInt("id_pais") + "\n";
+            contenido += "Nombre: " + res.getString("nombre_pais") + "\n";
+            contenido += "Capital: " + res.getString("capital_pais") + "\n";
+            contenido += "-----------------------------\n";
+        }
+
+        PDF pdf = new PDF();
+
+        pdf.btnPDFActionPerformed(contenido);
+        System.out.println("PDF creado");
+
+        res.close();
+        ejecutar.close();
+        conectado.close();
+
+    } catch (SQLException e) {
+        System.out.println(e);
+    }
+}
 }
